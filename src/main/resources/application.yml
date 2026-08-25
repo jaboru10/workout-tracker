@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: workout-tracker
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/workout}
+
+app:
+  jwt:
+    # En producción define esta variable de entorno. Debe tener al menos 32 caracteres.
+    secret: ${APP_JWT_SECRET:cambia-esto-por-un-secreto-largo-y-seguro-de-produccion}
+    expiration-ms: 604800000  # 7 días
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    org.springframework.data.mongodb: INFO
+
