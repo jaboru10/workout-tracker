@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Registro deshabilitado: el alta de usuarios se hace manualmente en Atlas
+                        .requestMatchers("/api/auth/register").denyAll()
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/swagger-ui/**",
