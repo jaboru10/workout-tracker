@@ -29,17 +29,17 @@ function e(name, muscleGroup, targetSets, targetReps, bodyweight) {
 function d(order, name, exercises) {
   return { name, order, exercises };
 }
-// Helper para una rutina predefinida.
-function preset(name, category, templateDays) {
+// Helper para una rutina predefinida. Jerarquía: Nivel > Tipo > Rutina.
+function preset(name, level, type, templateDays) {
   return {
-    userId: null, name, category,
+    userId: null, name, level, type,
     active: false, preset: true, archived: false, sourceRoutineId: null,
     templateDays, _class: CLASS,
   };
 }
 
 const PRESETS = [
-  preset("Full Body 3 días", "Principiante", [
+  preset("Full Body 3 días", "Principiante", "Fuerza", [
     d(1, "Día A", [
       e("Sentadilla", "Pierna", 3, "5"), e("Press banca", "Pecho", 3, "5"),
       e("Remo con barra", "Espalda", 3, "5"), e("Press militar", "Hombro", 3, "8"),
@@ -57,7 +57,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("StrongLifts 5x5", "Fuerza", [
+  preset("StrongLifts 5x5", "Principiante", "Fuerza", [
     d(1, "Entreno A", [
       e("Sentadilla", "Pierna", 5, "5"), e("Press banca", "Pecho", 5, "5"),
       e("Remo con barra", "Espalda", 5, "5"),
@@ -68,7 +68,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Starting Strength", "Fuerza", [
+  preset("Starting Strength", "Principiante", "Fuerza", [
     d(1, "Día A", [
       e("Sentadilla", "Pierna", 3, "5"), e("Press banca", "Pecho", 3, "5"),
       e("Peso muerto", "Pierna", 1, "5"),
@@ -79,7 +79,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Madcow 5x5", "Fuerza", [
+  preset("Madcow 5x5", "Intermedio", "Fuerza", [
     d(1, "Pesado (lunes)", [
       e("Sentadilla", "Pierna", 5, "5"), e("Press banca", "Pecho", 5, "5"),
       e("Remo con barra", "Espalda", 5, "5"),
@@ -94,7 +94,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Upper/Lower 4 días", "Híbrido", [
+  preset("Upper/Lower 4 días", "Intermedio", "Híbrido", [
     d(1, "Superior A", [
       e("Press banca", "Pecho", 4, "6-8"), e("Remo con barra", "Espalda", 4, "6-8"),
       e("Press militar", "Hombro", 3, "8-10"), e("Jalón al pecho", "Espalda", 3, "10"),
@@ -117,7 +117,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Push/Pull/Legs (6 días)", "Hipertrofia", [
+  preset("Push/Pull/Legs (6 días)", "Intermedio", "Hipertrofia", [
     d(1, "Empuje", [
       e("Press banca", "Pecho", 4, "8"), e("Press militar", "Hombro", 4, "10"),
       e("Press inclinado mancuerna", "Pecho", 3, "10"), e("Elevaciones laterales", "Hombro", 4, "15"),
@@ -135,7 +135,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Weider 5 días", "Hipertrofia", [
+  preset("Weider 5 días", "Intermedio", "Hipertrofia", [
     d(1, "Pecho", [
       e("Press banca", "Pecho", 4, "10"), e("Press inclinado mancuerna", "Pecho", 4, "10"),
       e("Aperturas", "Pecho", 3, "12"), e("Fondos", "Tríceps", 3, "12", true),
@@ -162,7 +162,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("Arnold Split (6 días)", "Hipertrofia", [
+  preset("Arnold Split (6 días)", "Avanzado", "Hipertrofia", [
     d(1, "Pecho/Espalda", [
       e("Press banca", "Pecho", 4, "10"), e("Press inclinado", "Pecho", 4, "10"),
       e("Dominadas", "Espalda", 4, "8", true), e("Remo con barra", "Espalda", 4, "10"),
@@ -180,7 +180,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("PHUL 4 días", "Fuerza", [
+  preset("PHUL 4 días", "Intermedio", "Híbrido", [
     d(1, "Superior fuerza", [
       e("Press banca", "Pecho", 4, "5"), e("Remo con barra", "Espalda", 4, "5"),
       e("Press militar", "Hombro", 3, "6"), e("Jalón al pecho", "Espalda", 3, "8"),
@@ -203,7 +203,7 @@ const PRESETS = [
     ]),
   ]),
 
-  preset("PHAT 5 días", "Fuerza", [
+  preset("PHAT 5 días", "Avanzado", "Híbrido", [
     d(1, "Espalda/Hombro fuerza", [
       e("Remo con barra", "Espalda", 4, "5"), e("Dominadas", "Espalda", 4, "6", true),
       e("Press militar", "Hombro", 4, "5"), e("Elevaciones laterales", "Hombro", 3, "8"),
@@ -243,7 +243,7 @@ if (yaTiene) {
   const hex = miRutinaId.toHexString ? miRutinaId.toHexString() : miRutinaId.str;
   db.routines.insertOne({
     _id: miRutinaId,
-    userId: USER_ID, name: "Mi rutina", category: "Otra",
+    userId: USER_ID, name: "Mi rutina", level: null, type: null,
     active: true, preset: false, archived: false, sourceRoutineId: null,
     templateDays: [], _class: CLASS,
   });

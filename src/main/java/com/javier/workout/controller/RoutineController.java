@@ -45,7 +45,7 @@ public class RoutineController {
     @PostMapping
     public Routine create(@RequestBody Routine body) {
         return service.createEmpty(
-                SecurityUtils.currentUserId(), body.getName(), body.getCategory());
+                SecurityUtils.currentUserId(), body.getName(), body.getLevel(), body.getType());
     }
 
     /** Usa una predefinida: crea una copia personal modificable y la activa. */
@@ -66,7 +66,8 @@ public class RoutineController {
                 .filter(r -> userId.equals(r.getUserId()))
                 .map(existing -> {
                     existing.setName(body.getName());
-                    existing.setCategory(body.getCategory());
+                    existing.setLevel(body.getLevel());
+                    existing.setType(body.getType());
                     return ResponseEntity.ok(repo.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());

@@ -43,11 +43,12 @@ public class RoutineService {
     }
 
     /** Crea una rutina vacía. Se activa si el usuario aún no tiene ninguna activa. */
-    public Routine createEmpty(String userId, String name, String category) {
+    public Routine createEmpty(String userId, String name, String level, String type) {
         Routine r = new Routine();
         r.setUserId(userId);
         r.setName(name);
-        r.setCategory(category);
+        r.setLevel(level);
+        r.setType(type);
         r.setPreset(false);
         boolean noneActive = routineRepo.findByUserIdAndActiveTrueAndArchivedFalse(userId).isEmpty();
         r.setActive(noneActive);
@@ -63,7 +64,8 @@ public class RoutineService {
         Routine copy = new Routine();
         copy.setUserId(userId);
         copy.setName(preset.getName());
-        copy.setCategory(preset.getCategory());
+        copy.setLevel(preset.getLevel());
+        copy.setType(preset.getType());
         copy.setPreset(false);
         copy.setSourceRoutineId(preset.getId());
         copy = routineRepo.save(copy);

@@ -25,7 +25,10 @@ public class Routine {
 
     private String userId;            // null = predefinida global
     private String name;
-    private String category;          // "Fuerza", "Hipertrofia", "Principiante"…
+
+    // Jerarquía de 3 escalones (IL-004): Nivel > Tipo > Rutina.
+    private String level;             // "Principiante", "Intermedio", "Avanzado"
+    private String type;              // "Fuerza", "Hipertrofia", "Híbrido"
 
     private boolean active = false;   // la rutina seleccionada (solo una true por usuario)
     private boolean preset = false;   // true = plantilla de la biblioteca
@@ -47,8 +50,11 @@ public class Routine {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getLevel() { return level; }
+    public void setLevel(String level) { this.level = level; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
