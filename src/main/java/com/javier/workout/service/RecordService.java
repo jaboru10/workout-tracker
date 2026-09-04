@@ -158,6 +158,8 @@ public class RecordService {
         pr.setValue(r.value);
         pr.setDate(r.date);
         pr.setSourceSessionId(r.sourceSessionId);
+        pr.setRoutineId(r.routineId);
+        pr.setRoutineName(r.routineName);
         recordRepo.save(pr);
     }
 
@@ -190,6 +192,8 @@ public class RecordService {
         r.value = value;
         r.date = s.getDate();
         r.sourceSessionId = s.getId();
+        r.routineId = s.getRoutineId();
+        r.routineName = s.getRoutineName();
         r.precedingExerciseIds = se.getPrecedingExerciseIds();
         return r;
     }
@@ -214,6 +218,8 @@ public class RecordService {
         public BigDecimal value;
         public LocalDate date;
         public String sourceSessionId;
+        public String routineId;
+        public String routineName;
         public List<String> precedingExerciseIds;
     }
 }

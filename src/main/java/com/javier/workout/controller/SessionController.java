@@ -1,7 +1,9 @@
 package com.javier.workout.controller;
 
 import com.javier.workout.config.SecurityUtils;
+import com.javier.workout.model.Routine;
 import com.javier.workout.model.Session;
+import com.javier.workout.repository.RoutineRepository;
 import com.javier.workout.repository.SessionRepository;
 import com.javier.workout.service.RecordService;
 import com.javier.workout.service.RecordService.RecordResult;
@@ -16,10 +18,12 @@ import java.util.Map;
 public class SessionController {
 
     private final SessionRepository repo;
+    private final RoutineRepository routineRepo;
     private final RecordService recordService;
 
-    public SessionController(SessionRepository repo, RecordService recordService) {
+    public SessionController(SessionRepository repo, RoutineRepository routineRepo, RecordService recordService) {
         this.repo = repo;
+        this.routineRepo = routineRepo;
         this.recordService = recordService;
     }
 
@@ -42,8 +46,15 @@ public class SessionController {
      */
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Session session) {
+        String userId = SecurityUtils.currentUserId();
         session.setId(null);
-        session.setUserId(SecurityUtils.currentUserId());
+        session.setUserId(userId);
+        // Congela la rutina activa en la sesión (IL-004). Si no hay activa,
+        // queda sin rutina (sesión "suelta"), no es error.
+        routineRepo.findByUserIdAndActiveTrueAndArchivedFalse(userId).ifPresent(r -> {
+            session.setRoutineId(r.getId());
+            session.setRoutineName(r.getName());
+        });
         Session saved = repo.save(session);
 
         List<RecordResult> newRecords = recordService.recalcRecords(saved);
@@ -61,6 +72,10 @@ public class SessionController {
                 .map(existing -> {
                     session.setId(existing.getId());
                     session.setUserId(existing.getUserId());
+                    // La rutina queda CONGELADA en la creación: al editar se
+                    // conserva la de la sesión original, no la activa actual.
+                    session.setRoutineId(existing.getRoutineId());
+                    session.setRoutineName(existing.getRoutineName());
                     Session saved = repo.save(session);
                     List<RecordResult> newRecords = recordService.recalcRecords(saved);
                     return ResponseEntity.ok((Object) Map.of(

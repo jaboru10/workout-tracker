@@ -13,6 +13,7 @@ public class TrainingDay {
     private String id;
 
     private String userId;
+    private String routineId;   // rutina a la que pertenece (IL-004)
     private String name;   // "Día A - Pecho/Tríceps"
     private int order;
     private boolean active = true;
@@ -26,6 +27,9 @@ public class TrainingDay {
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
+    public String getRoutineId() { return routineId; }
+    public void setRoutineId(String routineId) { this.routineId = routineId; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

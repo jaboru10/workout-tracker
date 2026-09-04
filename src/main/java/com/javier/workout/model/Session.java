@@ -17,6 +17,13 @@ public class Session {
     private String userId;
     private LocalDate date;          // fecha local, NUNCA timestamp UTC
     private String trainingDayId;    // plantilla usada (referencia informativa)
+
+    // Contexto de rutina CONGELADO al crear la sesión (IL-004). Se guarda el
+    // nombre además del id para que el historial no se corrompa aunque luego
+    // se renombre, archive o cambie de rutina activa.
+    private String routineId;
+    private String routineName;
+
     private boolean badDay = false;  // "hoy estoy flojo"
     private String generalNotes;
 
@@ -35,6 +42,12 @@ public class Session {
 
     public String getTrainingDayId() { return trainingDayId; }
     public void setTrainingDayId(String trainingDayId) { this.trainingDayId = trainingDayId; }
+
+    public String getRoutineId() { return routineId; }
+    public void setRoutineId(String routineId) { this.routineId = routineId; }
+
+    public String getRoutineName() { return routineName; }
+    public void setRoutineName(String routineName) { this.routineName = routineName; }
 
     public boolean isBadDay() { return badDay; }
     public void setBadDay(boolean badDay) { this.badDay = badDay; }

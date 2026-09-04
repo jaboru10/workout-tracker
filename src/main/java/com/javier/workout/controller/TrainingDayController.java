@@ -1,7 +1,9 @@
 package com.javier.workout.controller;
 
 import com.javier.workout.config.SecurityUtils;
+import com.javier.workout.model.Routine;
 import com.javier.workout.model.TrainingDay;
+import com.javier.workout.repository.RoutineRepository;
 import com.javier.workout.repository.TrainingDayRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,21 +15,38 @@ import java.util.List;
 public class TrainingDayController {
 
     private final TrainingDayRepository repo;
+    private final RoutineRepository routineRepo;
 
-    public TrainingDayController(TrainingDayRepository repo) {
+    public TrainingDayController(TrainingDayRepository repo, RoutineRepository routineRepo) {
         this.repo = repo;
+        this.routineRepo = routineRepo;
     }
 
+    /**
+     * Días de una rutina. Sin parámetro devuelve los de la rutina activa.
+     * Si el usuario no tiene rutina activa, devuelve los días legacy (sin
+     * rutina), para no romper datos previos a IL-004.
+     */
     @GetMapping
-    public List<TrainingDay> list() {
-        return repo.findByUserIdAndActiveTrueOrderByOrderAsc(SecurityUtils.currentUserId());
+    public List<TrainingDay> list(@RequestParam(required = false) String routineId) {
+        String userId = SecurityUtils.currentUserId();
+        String target = routineId != null ? routineId : activeRoutineId(userId);
+        if (target == null) {
+            return repo.findByUserIdAndRoutineIdIsNullAndActiveTrueOrderByOrderAsc(userId);
+        }
+        return repo.findByUserIdAndRoutineIdAndActiveTrueOrderByOrderAsc(userId, target);
     }
 
     @PostMapping
     public TrainingDay create(@RequestBody TrainingDay day) {
+        String userId = SecurityUtils.currentUserId();
         day.setId(null);
-        day.setUserId(SecurityUtils.currentUserId());
+        day.setUserId(userId);
         day.setActive(true);
+        // El día cuelga de la rutina indicada o, por defecto, de la activa.
+        if (day.getRoutineId() == null) {
+            day.setRoutineId(activeRoutineId(userId));
+        }
         return repo.save(day);
     }
 
@@ -54,5 +73,11 @@ public class TrainingDayController {
                     return ResponseEntity.noContent().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    private String activeRoutineId(String userId) {
+        return routineRepo.findByUserIdAndActiveTrueAndArchivedFalse(userId)
+                .map(Routine::getId)
+                .orElse(null);
     }
 }

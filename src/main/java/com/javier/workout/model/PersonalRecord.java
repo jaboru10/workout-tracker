@@ -31,6 +31,11 @@ public class PersonalRecord {
     private LocalDate date;
     private String sourceSessionId; // clave para recalcular si se borra
 
+    // Contexto de rutina de la sesión origen (IL-004), denormalizado para
+    // mostrarlo sin joins. Puede ser null en récords de sesiones antiguas.
+    private String routineId;
+    private String routineName;
+
     public PersonalRecord() {}
 
     public String getId() { return id; }
@@ -65,6 +70,12 @@ public class PersonalRecord {
 
     public String getSourceSessionId() { return sourceSessionId; }
     public void setSourceSessionId(String sourceSessionId) { this.sourceSessionId = sourceSessionId; }
+
+    public String getRoutineId() { return routineId; }
+    public void setRoutineId(String routineId) { this.routineId = routineId; }
+
+    public String getRoutineName() { return routineName; }
+    public void setRoutineName(String routineName) { this.routineName = routineName; }
 
     public enum RecordType {
         MAX_WEIGHT,      // mayor peso independientemente de reps
