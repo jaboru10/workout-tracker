@@ -2,6 +2,7 @@ package com.javier.workout.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -31,6 +33,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Sin token o con token caducado → 401 (antes salía 403 y la PWA no
+                // sabía que tenía que volver a pedir login).
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
                         // Registro deshabilitado: el alta de usuarios se hace manualmente en Atlas
                         .requestMatchers("/api/auth/register").denyAll()
@@ -54,9 +59,12 @@ public class SecurityConfig {
         // En producción restringe esto al dominio de tu PWA (Vercel/Netlify)
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
+                "http://localhost:4173",
                 "http://localhost:3000",
                 "https://workout-pwa-production.up.railway.app",
-                "https://workout-pwa-evo-production.up.railway.app"
+                "https://workout-pwa-evo-production.up.railway.app",
+                // PWA v3 publicada en GitHub Pages
+                "https://jaboru10.github.io"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
